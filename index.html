@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Seprosat GPS – Localización y Control en Tiempo Real</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #0f172a;
+      --bg-soft: #020617;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --card-bg: #020617;
+      --border: #1f2937;
+      --radius: 14px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.65);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1d4ed8 0, #020617 50%, #000 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 72px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 20%, #38bdf8, #1d4ed8 40%, #0f172a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.6);
+    }
+
+    .logo-text-title {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+
+    .logo-text-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .badge {
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .hero-left {
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 55%),
+                  rgba(15, 23, 42, 0.96);
+      border-radius: 22px;
+      padding: 24px 22px 22px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 11px 4px 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at left, rgba(56, 189, 248, 0.25), transparent 55%),
+                  rgba(15, 23, 42, 0.9);
+      font-size: 11px;
+      margin-bottom: 14px;
+    }
+
+    .hero-pill-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #22c55e, #16a34a 45%, #052e16 100%);
+      box-shadow:
+        0 0 0 2px rgba(34, 197, 94, 0.4),
+        0 0 22px rgba(22, 163, 74, 0.8);
+    }
+
+    .hero-pill-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .hero-pill-text {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .hero-title {
+      font-size: 30px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span.highlight {
+      background: linear-gradient(to right, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 32rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-metrics { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; font-size: 12px; }
+    .metric { padding: 9px 11px; border-radius: 12px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.45); display: flex; flex-direction: column; gap: 2px; min-width: 120px; }
+    .metric-label { color: var(--muted); font-size: 11px; }
+    .metric-value { font-weight: 600; font-size: 13px; }
+    .metric-value.ok { color: var(--accent); }
+    .metric-value.alert { color: var(--danger); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .btn { padding: 9px 16px; border-radius: 999px; border: 1px solid transparent; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.18s ease-out; background: none; color: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #2563eb, #22c55e); box-shadow: 0 14px 30px rgba(37, 99, 235, 0.55); color: #f9fafb; }
+    .btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 18px 45px rgba(37, 99, 235, 0.7); }
+    .btn-outline { border-color: rgba(148, 163, 184, 0.7); background: rgba(15, 23, 42, 0.9); }
+    .btn-outline:hover { border-color: rgba(148, 163, 184, 1); background: rgba(15, 23, 42, 1); }
+    .btn-badge { border-radius: 999px; padding: 2px 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.5); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #a5b4fc; }
+    .hero-footnote { font-size: 11px; color: var(--muted); }
+    .hero-bottom { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 20px; font-size: 12px; }
+    .stacked-label { display: flex; flex-direction: column; gap: 3px; max-width: 210px; }
+    .stacked-label-title { font-size: 12px; color: #e5e7eb; font-weight: 500; }
+    .stacked-label-text { color: var(--muted); font-size: 11px; }
+    .divider { width: 1px; background: linear-gradient(to bottom, transparent, rgba(148, 163, 184, 0.5), transparent); }
+    @media (max-width: 600px) { .hero-bottom { flex-direction: column; } .divider { display: none; } }
+    .hero-right { position: relative; display: flex; align-items: stretch; }
+    .card { background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.35), rgba(15, 23, 42, 0.98)); border-radius: 22px; padding: 18px 16px 16px; border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: var(--shadow-soft); backdrop-filter: blur(18px); display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .card-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 9px; height: 9px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 18px rgba(34, 197, 94, 0.9); }
+    .card-subtitle { font-size: 11px; color: var(--muted); }
+    .card-badge { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.5); }
+
+    .map { position: relative; border-radius: 16px; background: radial-gradient(circle at 10% 0%, #1e293b, #020617 55%); border: 1px solid rgba(148, 163, 184, 0.35); padding: 10px; overflow: hidden; min-height: 220px; }
+    .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px); background-size: 22px 22px; opacity: 0.6; mask-image: radial-gradient(circle at center, black 0, black 55%, transparent 100%); }
+    .route-line { position: absolute; inset: 16px; border: 1px dashed rgba(56, 189, 248, 0.7); border-radius: 26px; opacity: 0.8; }
+    .map-point { position: absolute; width: 13px; height: 13px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.5), 0 0 20px rgba(22, 163, 74, 0.9); }
+    .map-point.red { background: #ef4444; box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.65), 0 0 20px rgba(248, 113, 113, 0.9); }
+    .map-point-label { position: absolute; transform: translateY(-120%); background: rgba(15, 23, 42, 0.96); border-radius: 999px; padding: 4px 8px; font-size: 10px; border: 1px solid rgba(148, 163, 184, 0.7); white-space: nowrap; }
+    .map-footer { position: relative; margin-top: 150px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 11px; gap: 10px; }
+    .map-legend { display: flex; flex-direction: column; gap: 5px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 999px; background: #22c55e; }
+    .legend-dot.red { background: #ef4444; }
+    .legend-label { color: var(--muted); }
+    .map-meta { text-align: right; color: var(--muted); }
+    .map-meta strong { color: #e5e7eb; }
+    .steps { margin-top: 36px; background: rgba(15, 23, 42, 0.93); border-radius: 18px; border: 1px solid rgba(148, 163, 184, 0.4); padding: 20px 18px; }
+    .steps-title { font-size: 16px; margin-bottom: 12px; }
+    .step { margin-bottom: 12px; }
+    .step-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+    .step-text { font-size: 12px; color: var(--muted); }
+    .code-inline { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; background: rgba(15, 23, 42, 0.9); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(148, 163, 184, 0.5); }
+    .footer { margin-top: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="nav">
+      <div class="logo">
+        <div class="logo-mark">S</div>
+        <div>
+          <div class="logo-text-title">Seprosat GPS</div>
+          <div class="logo-text-sub">Monitoriza, ahorra y protege tu flota</div>
+        </div>
+      </div>
+      <div class="nav-cta">
+        <span class="badge">Demo online en 3 minutos</span>
+        <span style="font-size: 12px; color: #9ca3af;">Sin tarjetas, sin instalaciones complejas</span>
+      </div>
+    </header>
+
+    <main class="hero">
+      <section class="hero-left">
+        <div class="hero-pill">
+          <div class="hero-pill-dot"></div>
+          <div>
+            <div class="hero-pill-label">Control total en tiempo real</div>
+            <div class="hero-pill-text">Ubicación, alertas y rutas optimizadas para tu flota</div>
+          </div>
+        </div>
+
+        <h1 class="hero-title">
+          Localiza cada vehículo y reduce hasta un <span class="highlight">30% los costes</span> de tu operación.
+        </h1>
+
+        <p class="hero-subtitle">
+          Plataforma profesional de monitoreo GPS para empresas de transporte, logística, servicios técnicos y seguridad. Visualiza tu flota en tiempo real, automatiza alertas y toma decisiones con datos, no con suposiciones.
+        </p>
+
+        <div class="hero-metrics">
+          <div class="metric">
+            <span class="metric-label">Vehículos activos</span>
+            <span class="metric-value ok">148 en línea · 2 en pausa</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Alertas hoy</span>
+            <span class="metric-value alert">3 geocercas · 1 exceso de velocidad</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Ahorro estimado combustible</span>
+            <span class="metric-value ok">–18% en 90 días</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="https://tovaryasmil-sys.github.io/demo" class="btn btn-primary">
+            Probar demo ahora
+            <span class="btn-badge">Sin compromiso</span>
+          </a>
+
+          <a href="https://tovaryasmil-sys.github.io/panel" class="btn btn-outline">
+            Ver panel en vivo
+          </a>
+        </div>
+
+        <p class="hero-footnote">
+          Tu página está alojada gratis en GitHub Pages, con certificado SSL automático y lista para conectar tu agente de IA.
+        </p>
+
+        <div class="hero-bottom">
+          <div class="stacked-label">
+            <span class="stacked-label-title">Integración con IA en tu web</span>
+            <span class="stacked-label-text">
+              Añade un chatbot para soporte, ventas o atención 24/7 pegando un único script en tu <span class="code-inline">index.html</span>.
+            </span>
+          </div>
+          <div class="divider"></div>
+          <div class="stacked-label">
+            <span class="stacked-label-title">Actualiza desde GitHub o Replit</span>
+            <span class="stacked-label-text">
+              Cada <span class="code-inline">commit + push</span> publica una nueva versión en segundos. Ideal para probar copys, diseños y agentes de IA.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="hero-right">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <span class="status-dot"></span>
+                Flota en vivo · Panel mapa
+              </div>
+              <div class="card-subtitle">Actualizado hace 8 segundos · Modo supervisor</div>
+            </div>
+            <span class="card-badge">Vista de rutas</span>
+          </div>
+
+          <div class="map">
+            <div class="map-grid"></div>
+            <div class="route-line"></div>
+
+            <div class="map-point" style="top: 26%; left: 22%;"></div>
+            <div class="map-point" style="top: 40%; right: 18%;"></div>
+            <div class="map-point" style="bottom: 22%; left: 30%;"></div>
+
+            <div class="map-point red" style="top: 36%; left: 46%;"></div>
+            <div class="map-point-label" style="top: 30%; left: 50%;">
+              Camión 07 · Parada no planificada
+            </div>
+
+            <div class="map-footer">
+              <div class="map-legend">
+                <div class="legend-item">
+                  <span class="legend-dot"></span>
+                  <span class="legend-label">Vehículos en ruta</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot red"></span>
+                  <span class="legend-label">Alertas activas</span>
+                </div>
+              </div>
+              <div class="map-meta">
+                <div><strong>Resumen 24h</strong></div>
+                <div>Rutas completadas: 82</div>
+                <div>Paradas críticas: 4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <section class="steps">
+      <h2 class="steps-title">Cómo poner esta página online gratis con GitHub Pages</h2>
+
+      <div class="step">
+        <div class="step-title">1. Crear el repositorio en GitHub</div>
+        <p class="step-text">
+          Crea un repositorio llamado <span class="code-inline">tovaryasmil-sys.github.io</span> para que la URL sea
+          <span class="code-inline">https://tovaryasmil-sys.github.io</span>. Sube este archivo como <span class="code-inline">index.html</span>.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-title">2. Activar GitHub Pages (hosting gratis)</div>
+        <p class="step-text">
+          En el repositorio, ve a <span class="code-inline">Settings → Pages</span>, elige la rama
+          <span class="code-inline">main</span> y la carpeta raíz <span class="code-inline">/</span>. Guarda y espera 1–3 minutos
+          hasta que la URL quede activa con HTTPS.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-title">3. Actualizar la web desde Replit (opcional)</div>
+        <p class="step-text">
+          Si generas el código en Replit, conecta el proyecto con tu repo de GitHub y haz
+          <span class="code-inline">commit + push</span> cada vez que quieras publicar cambios. GitHub Pages se actualiza solo.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-title">4. Añadir tu agente de IA (chatbot)</div>
+        <p class="step-text">
+          Regístrate en un proveedor de chatbot y copia el script de incrustación que te den. Pégalo justo antes de la etiqueta
+          de cierre <span class="code-inline">&lt;/body&gt;</span> en este archivo y súbelo a GitHub para tener tu asistente activo 24/7.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-title">5. Personalizar y escalar</div>
+        <p class="step-text">
+          Cambia textos, colores y secciones editando el HTML/CSS. Cuando estés listo, compra un dominio propio
+          e intégralo con GitHub Pages sin cambiar de hosting.
+        </p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© <span id="year"></span> Seprosat GPS · Ejemplo de landing lista para IA</span>
+      <span>Edita este texto en <span class="code-inline">index.html</span> para adaptarlo a tu marca.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- AQUI PEGAS EL SCRIPT DE TU CHATBOT IA -->
+  <!-- Ejemplo (NO funcional, solo referencia):
+  <script>
+    window.myChatbotConfig = { page: "seprosat-gps" };
+  </script>
+  <script src="https://proveedor-chatbot.com/widget.js" async></script>
+  -->
+  <!-- DEJA SIEMPRE EL CHATBOT JUSTO ANTES DE </body> -->
+
+</body>
+</html>
